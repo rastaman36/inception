@@ -1,0 +1,113 @@
+version: "2.23.3-desktop.2"
+
+networks:
+  inception :
+    name: inception
+    # external: true
+
+services:
+  nginx:
+    container_name: nginx
+    build: ./requirements/nginx/.
+    image: nginx
+    ports:
+      - "443:443"
+    depends_on:
+      - wordpress
+    networks:
+      - inception
+    volumes:
+      - wordpress:/var/www/html
+    restart: always
+
+
+  mariadb:
+    container_name: mariadb
+    build: ./requirements/mariadb/.
+    image: mariadb
+    networks:
+      - inception
+    volumes:
+      - mariadb:/var/lib/mysql
+    env_file:
+      - .env
+    restart: always
+
+
+
+  wordpress:
+    container_name: wordpress
+    build: ./requirements/wordpress/.
+    image: wordpress
+    networks:
+      - inception
+    env_file:
+      - .env
+    depends_on:
+      - mariadb
+    volumes:
+      - wordpress:/var/www/html
+    restart: always
+
+#bonuuuuuuussss
+  adminer:
+    container_name: adminer
+    build:  ./requirements/bonus/adminer/.
+    image:  adminer
+    networks:
+      - inception
+    depends_on:
+      - mariadb
+    restart: always
+    ports: 
+      - "600:80"
+  redis:
+    container_name: redis
+    build: ./requirements/bonus/redis/.
+    image: redis
+    networks:
+      - inception
+    depends_on:
+      - wordpress
+    volumes:
+     - wordpress:/var/www/html
+    restart: always
+  cadvisor:
+    container_name: cadvisor
+    build: ./requirements/bonus/cadvisor/.
+    image: cadvisor
+    ports:
+      - "8080:8080"
+    networks:
+      - inception
+    # volumes:
+      # - /:/rootfs:ro
+      # - /var/run:/var/run:ro 
+      # - /sys:/sys:ro 
+      # - /var/lib/docker/:/var/lib/docker:ro
+    restart: always
+  website:
+    container_name: website
+    build: ./requirements/bonus/website/.
+    image: website
+    ports:
+      - "80:80"
+    networks:
+      - inception
+
+
+volumes:
+    wordpress:
+        name: wordpress
+        driver: local
+        driver_opts:
+                device: /Users/mohammedchaoui/Desktop/wordpress_vol
+                type : 'none'
+                o:  'bind'
+    mariadb:
+        name: mariadb
+        driver: local
+        driver_opts:
+                device: /Users/mohammedchaoui/Desktop/mariadb_vol
+                type : 'none'
+                o:  'bind'
