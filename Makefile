@@ -1,28 +1,20 @@
-# **************************************************************************** #
-#                                                                              #
-#                                                         :::      ::::::::    #
-#    Makefile                                           :+:      :+:    :+:    #
-#                                                     +:+ +:+         +:+      #
-#    By: mochaoui <marvin@42.fr>                    +#+  +:+       +#+         #
-#                                                 +#+#+#+#+#+   +#+            #
-#    Created: 2024/01/26 23:51:11 by mochaoui          #+#    #+#              #
-#    Updated: 2024/02/06 21:44:47 by mochaoui         ###   ########.fr        #
-#                                                                              #
-# **************************************************************************** #
+all: up
 
-all : up
+up:
+	@docker-compose -f ./srcs/docker-compose.yml up -d
 
-up : 
-	@docker-compose -f ./srcs/docker-compose.yml up --build -d 
-
-down : 
+down:
 	@docker-compose -f ./srcs/docker-compose.yml down
 
-stop : 
-	@docker-compose -f ./srcs/docker-compose.yml stop
+build:
+	@docker-compose -f ./srcs/docker-compose.yml build
 
-start : 
-	@docker-compose -f ./srcs/docker-compose.yml start
+re:
+	@docker-compose -f ./srcs/docker-compose.yml down
+	@docker-compose -f ./srcs/docker-compose.yml up --build -d
 
-status : 
-	@docker ps
+logs:
+	@docker-compose -f ./srcs/docker-compose.yml logs
+
+clean: down
+	@docker system prune --force

@@ -1,10 +1,10 @@
 FROM debian:bullseye
 
-RUN apt -y update && \
-    apt -y install wget php php-mysql
+RUN apt-get update -y && apt install wget -y && apt-get install php php-mysql -y
 
-COPY ./script.sh /
+WORKDIR /var/www
 
-RUN chmod +x /script.sh
+RUN wget https://github.com/vrana/adminer/releases/download/v4.8.1/adminer-4.8.1.php && \
+    mv adminer-4.8.1.php index.php
 
-CMD ["/script.sh"]
+CMD	[ "php", "-S", "[::]:8080", "-t", "/var/www" ]

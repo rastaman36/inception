@@ -1,20 +1,13 @@
-# Use the Debian base image
 FROM debian:bullseye
 
-# Update the package lists and install Nginx
-RUN apt-get update && \
-    apt-get install -y nginx && \
-    apt install openssl -y
+RUN apt-get update -y && apt-get upgrade -y \
+    && apt-get install -y nginx \
+    && apt-get install gettext-base
 
-# Set the working directory
-# WORKDIR /etc
+COPY /conf /tmp/
 
-# Copy the script into the image
-COPY ./run/script.sh /
+COPY /tools /etc/nginx/ssl
 
-COPY ./run/config.conf /etc/nginx/conf.d/
-# Set executable permissions for the script
-RUN chmod +x /script.sh
+RUN chmod +x /tmp/script.sh
 
-# Start Nginx when the container starts
-CMD ["/script.sh"]
+CMD ["/tmp/script.sh"]

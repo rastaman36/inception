@@ -1,16 +1,10 @@
-# Use the Debian base image
 FROM debian:bullseye
 
-# Update the package lists and install Nginx
-RUN apt-get update && \
-    apt-get install -y mariadb-server
+RUN apt-get update -y && apt-get install -y mariadb-server && \
+    sed -i 's/bind-address\s*=\s*127.0.0.1/bind-address = 0.0.0.0/' /etc/mysql/mariadb.conf.d/50-server.cnf
 
-COPY ./50-server.cnf /etc/mysql/mariadb.conf.d/
+COPY conf/create_db.sh .
 
+RUN chmod +x create_db.sh
 
-COPY ./script.sh /
-
-RUN chmod +x /script.sh
-
-# Start Nginx when the container starts
-CMD ["/script.sh"]
+CMD ["./create_db.sh"]
